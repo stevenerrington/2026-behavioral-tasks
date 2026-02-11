@@ -1,0 +1,18 @@
+Condition	Block	Frequency	Timing File	TaskObject#1	TaskObject#2
+1	1	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_2.wav')
+2	1	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_3.wav')
+3	1	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_4.wav')
+4	1	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_6.wav')
+5	1	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_7.wav')
+6	1	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_8.wav')
+7	1	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_9.wav')
+8	1	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_11.wav')
+
+9	2	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_2.wav')
+10	2	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_3.wav')
+11	2	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_4.wav')
+12	2	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Grammatical_6.wav')
+13	2	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Multiviolation_1.wav')
+14	2	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Multiviolation_2.wav')
+15	2	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Single_Rule_break_1.wav')
+16	2	30	kikuchi_agl_v1	fix(0,0)	snd('stimuli/Single_Rule_break_2.wav')
