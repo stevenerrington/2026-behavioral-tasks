@@ -1,0 +1,2 @@
+Condition	Block	Frequency	Timing File	TaskObject#1	TaskObject#2
+1	1	1	Mk_basic_sound_v2	fix(0,0)	snd('stim.wav')
