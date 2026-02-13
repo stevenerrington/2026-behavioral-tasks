@@ -10,12 +10,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                         PARAMETERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fixation_point     = 1;       % TaskObject# for fixation point
-visual_stimulus    = 2;       % TaskObject# for image file
-auditory_stimulus  = 3;       % TaskObject# for sound file
+visual_stimulus    = 1;       % TaskObject# for image file
+auditory_stimulus  = 2;       % TaskObject# for sound file
+fixation_point     = 3;       % TaskObject# for fixation point
 
-fix_window    = 2;        % fixation window radius (deg)
-fix_hold_pre  = 500;      % ms fixation before sound
+fix_window    = 2.5;        % fixation window radius (deg)
+
+fp = load('C:\Experiments\MonkeyLogic\monkeylogic-tasks\_support\foreperiod_dist.mat');
+fix_hold_pre  = fp.foreperiod(randi(length(fp.foreperiod)));
 
 sound_reward_delay = 750;
 sound_duration = 500 + sound_reward_delay;  % duration in ms
@@ -70,6 +72,7 @@ if ~ontarget
 end
 
 % 3. Present stimulus during fixation
+toggleobject(fixation_point, 'status', 'on');
 toggleobject(auditory_stimulus, 'eventmarker', AudioOn);
 toggleobject(visual_stimulus,   'eventmarker', TargetOn);
 
