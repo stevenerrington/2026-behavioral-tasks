@@ -1,0 +1,14 @@
+Condition	Block	Frequency	Timing File	TaskObject#1	TaskObject#2
+1	1	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+
+2	2	3	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+3	2	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAB.wav')
+
+4	3	3	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+5	3	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAA_A.wav')
+
+6	4	3	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/BBBBB.wav')
+7	4	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/BBBBA.wav')
+
+8	5	3	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/BBBBB.wav')
+9	5	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/BBBB_B.wav')
