@@ -14,8 +14,10 @@ target_obj      = 3;   % Left peripheral target
 fix_window      = 3;   % Fixation window radius (deg)
 targ_window     = 5;   % Target window radius (deg)
 
+delay_dist = linspace(500,2000,100);
+
 fix_acquire     = 2000; % Time allowed to acquire fixation (ms)
-fix_hold        = 500;  % Fixation hold before target appears (ms)
+fix_hold        = delay_dist(randperm(length(delay_dist),1));;  % Fixation hold before target appears (ms)
 targ_hold       = 500;  % Duration monkey must hold gaze on target (ms)
 tone_duration   = 400;  % Duration of tone (ms)
 post_tone_delay = 500;  % Delay between tone offset and reward (ms)
@@ -65,24 +67,6 @@ if ~ontarget
     return
 end
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% EPOCH 3: TONE PLAYS
-% Monkey must maintain fixation on target throughout
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-toggleobject(tone_obj, 'eventmarker', ToneOn);
-
-ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_duration);
-toggleobject(tone_obj, 'status', 'off');
-
-if ~ontarget
-    trialerror(3); % broke fixation during tone
-    toggleobject([fixation_point tone_obj], 'status', 'off');
-    idle(iti);
-    return
-end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % EPOCH 2: PERIPHERAL TARGET APPEARS
 % Monkey must look at the target and hold for 500 ms
@@ -109,6 +93,23 @@ ontarget = eyejoytrack('holdfix', target_obj, targ_window, targ_hold);
 if ~ontarget
     trialerror(3); % broke fixation on target
     toggleobject([fixation_point target_obj], 'status', 'off');
+    idle(iti);
+    return
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% EPOCH 3: TONE PLAYS
+% Monkey must maintain fixation on target throughout
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+toggleobject(tone_obj, 'eventmarker', ToneOn);
+
+ontarget = eyejoytrack('holdfix', target_obj, targ_window, tone_duration);
+toggleobject(tone_obj, 'status', 'off');
+
+if ~ontarget
+    trialerror(3); % broke fixation during tone
+    toggleobject([fixation_point target_obj tone_obj], 'status', 'off');
     idle(iti);
     return
 end

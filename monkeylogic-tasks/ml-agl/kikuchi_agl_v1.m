@@ -13,13 +13,13 @@
 fixation_point = 1;       % TaskObject# for fixation point
 auditory_stim  = 2;       % TaskObject# for sound file
 
-fix_window = 2;           % fixation window radius (deg)
+fix_window = 4;           % fixation window radius (deg)
 fix_hold_pre  = 500;      % ms fixation before sound
 
 sound_reward_delay = 750;
 sound_duration = get_object_duration(auditory_stim) + sound_reward_delay;  % duration in ms
 
-reward_duration = 300;    % ms juice reward
+reward_duration = 1000;    % ms juice reward
 iti_duration = 1000;      % ms inter-trial interval
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -48,7 +48,7 @@ toggleobject(fixation_point, 'eventmarker', FixspotOn);
 ontarget = eyejoytrack('acquirefix', fixation_point, fix_window, 2000);
 
 if ~ontarget
-    toggleobject(fixation_point, 'off');
+    toggleobject(fixation_point, 'status', 'off');
     eventmarker(NoFix);
     trialerror(4); % No fixation
     return
@@ -71,7 +71,7 @@ toggleobject(auditory_stim, 'eventmarker', AudioOn);
 
 ontarget = eyejoytrack('holdfix', fixation_point, fix_window, sound_duration);
 
-toggleobject(auditory_stim, 'eventmarker', AudioOff);
+toggleobject(auditory_stim, 'status', 'off', 'eventmarker', AudioOff);
 
 if ~ontarget
     toggleobject(fixation_point);

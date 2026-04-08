@@ -1,0 +1,5 @@
+Condition	Block	Frequency	Timing File	TaskObject#1	TaskObject#2	TaskObject#3
+1	1	25	kikuchi_cap_v1	fix(0,0)	snd('../stimuli/low_tone.wav')	sqr(1,[0 1 1],1,-7,0)
+2	1	25	kikuchi_cap_v1	fix(0,0)	snd('../stimuli/low_tone.wav')	sqr(1,[0 1 1],1,7,0)
+3	1	25	kikuchi_cap_v1	fix(0,0)	snd('../stimuli/high_tone.wav')	sqr(1,[1 0 1],1,-7,0)
+4	1	25	kikuchi_cap_v1	fix(0,0)	snd('../stimuli/high_tone.wav')	sqr(1,[1 0 1],1,7,0)

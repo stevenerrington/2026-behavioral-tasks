@@ -14,7 +14,7 @@ visual_stimulus    = 1;       % TaskObject# for image file
 auditory_stimulus  = 2;       % TaskObject# for sound file
 fixation_point     = 3;       % TaskObject# for fixation point
 
-fix_window    = 2.5;        % fixation window radius (deg)
+fix_window    = 7;        % fixation window radius (deg)
 
 fp = load('C:\Experiments\MonkeyLogic\monkeylogic-tasks\_support\foreperiod_dist.mat');
 fix_hold_pre  = fp.foreperiod(randi(length(fp.foreperiod)));
@@ -22,7 +22,7 @@ fix_hold_pre  = fp.foreperiod(randi(length(fp.foreperiod)));
 sound_reward_delay = 750;
 sound_duration = 500 + sound_reward_delay;  % duration in ms
 
-reward_duration = 300;    % ms juice reward
+reward_duration = 800;    % ms juice reward
 iti_duration = 1000;      % ms inter-trial interval
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
