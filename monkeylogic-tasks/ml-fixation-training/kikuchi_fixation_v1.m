@@ -14,9 +14,9 @@ white_square   = 1;       % TaskObject # for white square (filled rect)
 
 fix_window     = 5;       % fixation window radius (deg) — invisible circle
 acquire_time   = 10000;   % ms to wait for initial gaze (large, near-infinite)
-hold_check_dur = 50;      % ms per gaze-check polling interval
-reward_dur     = 50;      % ms reward pulse per polling cycle (continuous drip)
-reward_pause   = 20;      % ms pause between reward pulses
+hold_check_dur = 1;      % ms per gaze-check polling interval
+reward_dur     = 1000;      % ms reward pulse per polling cycle (continuous drip)
+reward_pause   = 0;      % ms pause between reward pulses
 
 max_task_dur   = 3600000; % ms total task duration before hard exit (1 hour)
 
@@ -61,8 +61,7 @@ while elapsed < max_task_dur
 
         if ontarget
             % Still fixating — deliver one reward pulse
-            goodmonkey(reward_dur, 'NumReward', 1, ...
-                'PauseTime', reward_pause, 'eventmarker', RewardOnset);
+            goodmonkey(reward_dur,'eventmarker', RewardOnset);
         else
             % Gaze left the window
             gaze_inside = false;
