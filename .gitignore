@@ -1,2 +1,3 @@
 *.bhv2
 *.mat
+.DS_Store
