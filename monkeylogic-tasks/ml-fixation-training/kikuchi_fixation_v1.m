@@ -76,3 +76,4 @@ end
 % 4. Task end — turn off square
 toggleobject(white_square, 'status', 'off', 'eventmarker', TaskEnd);
 trialerror(0); % Mark as correct so MonkeyLogic logs it cleanly
+
