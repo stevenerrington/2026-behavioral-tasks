@@ -12,7 +12,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 white_square   = 1;       % TaskObject # for white square (filled rect)
 
-fix_window     = 5;       % fixation window radius (deg) — invisible circle
+fix_window     = 2;       % fixation window radius (deg) — invisible circle
 acquire_time   = 10000;   % ms to wait for initial gaze (large, near-infinite)
 hold_check_dur = 1;      % ms per gaze-check polling interval
 reward_dur     = 1000;      % ms reward pulse per polling cycle (continuous drip)
