@@ -14,9 +14,9 @@ white_square   = 1;       % TaskObject # for white square (filled rect)
 
 fix_window     = 2;       % fixation window radius (deg) — invisible circle
 acquire_time   = 10000;   % ms to wait for initial gaze (large, near-infinite)
-hold_check_dur = 1;      % ms per gaze-check polling interval
-reward_dur     = 1000;      % ms reward pulse per polling cycle (continuous drip)
-reward_pause   = 0;      % ms pause between reward pulses
+hold_check_dur = 1;       % ms per gaze-check polling interval
+reward_dur     = 1000;    % ms reward pulse per polling cycle (continuous drip)
+reward_pause   = 0;       % ms pause between reward pulses
 
 max_task_dur   = 3600000; % ms total task duration before hard exit (1 hour)
 
@@ -32,6 +32,9 @@ TaskEnd        = 40;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                         TASK SEQUENCE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% 0. Hotkey escape
+hotkey('x', 'escape_screen(); assignin(''caller'',''continue_'',false);');  % stop the task immediately
 
 % 1. Display - white square - stays on for entire task
 toggleobject(white_square, 'eventmarker', SquareOn);
