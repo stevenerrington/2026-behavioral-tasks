@@ -12,9 +12,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                         PARAMETERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-white_square = 1;         % TaskObject # for white square (filled rect)
+white_square   = 1;       % TaskObject # for white square (filled rect)
 coloured_square = 2;      % TaskObject # for coloured square (filled rect)
-fix_window     = 2;       % fixation window radius (deg) — invisible circle
+fix_window     = 3;       % fixation window radius (deg) — invisible circle
 acquire_time   = 10000;   % ms to wait for initial gaze (large, near-infinite)
 hold_check_dur = 1;       % ms per gaze-check polling interval
 reward_dur     = 1000;    % ms reward pulse per polling cycle (continuous drip)
@@ -25,9 +25,9 @@ max_task_dur   = 3600000; % ms total task duration before hard exit (1 hour)
 %                         EVENT CODES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 SquareOn       = 20;
-GazeEnter      = 21;
-GazeExit       = 22;
-SquareOff      = 30;
+SquareOff      = 21;
+GazeEnter      = 22;
+GazeExit       = 23;
 RewardOnset    = 31;
 TaskEnd        = 40;
 
@@ -43,27 +43,28 @@ toggleobject(white_square, 'eventmarker', SquareOn);
 
 % 2. Initiliase state tracking
 elapsed     = 0;     % ms elapsed since task start;
+gazeInside  = false;
 
 % 3. Continuous reward loop
 while elapsed < max_task_dur
-    
+
     gaze_inside = false; % tracks whether gaze is currently in window
-    
+
     while elapsed < max_task_dur
-        
+
         if ~gaze_inside
-            
+
             % --- Gaze is OUTSIDE: wait for monkey to look at square ---
             ontarget = eyejoytrack('acquirefix', white_square, fix_window, acquire_time);
-            
+
             if ontarget
-                
+
                 % Gaze entered window
                 gaze_inside = true;
                 eventmarker(GazeEnter);
                 toggleobject(white_square, 'eventmarker', SquareOff);
                 toggleobject(coloured_square, 'eventmarker', SquareOn);
-                
+
             else
                 % acquire_time expired but no fixation - exit gracefully
                 break
@@ -71,25 +72,29 @@ while elapsed < max_task_dur
         else
             % --- Gaze is INSIDE: poll fixation and deliver reward ---
             ontarget = eyejoytrack('holdfix', coloured_square, fix_window, hold_check_dur);
-            
+
             if ontarget
                 % Still fixating — deliver one reward pulse
                 goodmonkey(reward_dur,'eventmarker', RewardOnset);
-                
+
             else
                 % Gaze left the window
                 gaze_inside = false;
                 eventmarker(GazeExit);
                 toggleobject(coloured_square, 'eventmarker', SquareOff);
-                toggleobject(white_square, 'eventmarker', SquareOn);
                 break
             end
         end
-        
+
         elapsed = elapsed + hold_check_dur;
-        
+
     end
-    
+
+    % If acquire_time expired (no fixation), exit outer loop too
+    if ~gaze_inside
+        break
+    end
+
 end
 
 % 4. Task end — turn off square
