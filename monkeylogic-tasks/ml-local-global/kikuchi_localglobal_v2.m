@@ -142,7 +142,15 @@ pupil_sample_flag    = true; % save trial-level timestamps to TrialRecord.UserVa
                               % Full continuous trace always saved in BHV2 regardless
 
 % --- Condition selection ---
-cond = TrialRecord.CurrentCondition;
+% TrialRecord.CurrentCondition is a unique integer 1-120 (row index).
+% The trial type (1-4) is carried in the Info column of the conditions file
+% and accessed via TrialRecord.CurrentConditionInfo.
+% Info values:
+%   1 = LocalStd  / GlobalStd   (frequent, same 5th tone)
+%   2 = LocalDev  / GlobalStd   (frequent, diff 5th tone)
+%   3 = LocalStd  / GlobalDev   (rare,     same 5th tone)
+%   4 = LocalDev  / GlobalDev   (rare,     diff 5th tone)
+cond = str2double(TrialRecord.CurrentConditionInfo);
 if cond == 2 || cond == 4
     fifth_tone = tone_5_dev;
 else
@@ -189,7 +197,7 @@ PupilEpochOff      = 62;   % end of pupil response epoch
 % contaminated epochs.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% --- Condition identity marker ---
+% --- Condition identity marker (uses trial type from Info column) ---
 switch cond
     case 1,  eventmarker(Code_LS_GS);
     case 2,  eventmarker(Code_LD_GS);
@@ -246,7 +254,7 @@ end
 
 if pupil_sample_flag
     TrialRecord.UserVars.pupil_baseline_t_end = trialtime();
-    TrialRecord.UserVars.pupil_cond           = cond;
+    TrialRecord.UserVars.pupil_cond           = cond;   % trial type 1-4 from Info
     TrialRecord.UserVars.fix_required         = REQUIRE_FIXATION;
 end
 eventmarker(PupilBaselineOff);
