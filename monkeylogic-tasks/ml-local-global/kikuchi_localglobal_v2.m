@@ -141,16 +141,29 @@ pre_seq_baseline_dur = 300;  % ms of pre-sequence fixation used as pupil baselin
 pupil_sample_flag    = true; % save trial-level timestamps to TrialRecord.UserVars
                               % Full continuous trace always saved in BHV2 regardless
 
-% --- Condition selection ---
-% TrialRecord.CurrentCondition is a unique integer 1-120 (row index).
-% The trial type (1-4) is carried in the Info column of the conditions file
-% and accessed via TrialRecord.CurrentConditionInfo.
-% Info values:
+% --- Trial type lookup ---
+% TrialRecord.CurrentCondition is a unique integer 1-120 (row index in
+% conditions file). The actual trial type (1-4) is looked up from the
+% vector below which must match the conditions file loaded for this run.
+%
+% Trial types:
 %   1 = LocalStd  / GlobalStd   (frequent, same 5th tone)
 %   2 = LocalDev  / GlobalStd   (frequent, diff 5th tone)
 %   3 = LocalStd  / GlobalDev   (rare,     same 5th tone)
 %   4 = LocalDev  / GlobalDev   (rare,     diff 5th tone)
-cond = str2double(TrialRecord.CurrentConditionInfo);
+%
+% <<<< SET THIS TO MATCH THE CONDITIONS FILE LOADED FOR THIS RUN >>>>
+RUN = 1;   % 1 = HHHHHfreq, 2 = AAAABfreq, 3 = BBBBBfreq, 4 = BBBBAfreq
+
+trial_types_run1 = [1, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1];
+trial_types_run2 = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 4, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2];
+trial_types_run3 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 1];
+trial_types_run4 = [2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 4, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 2, 4, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2];
+
+all_trial_types = {trial_types_run1, trial_types_run2, ...
+                   trial_types_run3, trial_types_run4};
+cond = all_trial_types{RUN}(TrialRecord.CurrentCondition);
+
 if cond == 2 || cond == 4
     fifth_tone = tone_5_dev;
 else
@@ -197,7 +210,7 @@ PupilEpochOff      = 62;   % end of pupil response epoch
 % contaminated epochs.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% --- Condition identity marker (uses trial type from Info column) ---
+% --- Condition identity marker (trial type 1-4 from lookup table) ---
 switch cond
     case 1,  eventmarker(Code_LS_GS);
     case 2,  eventmarker(Code_LD_GS);
