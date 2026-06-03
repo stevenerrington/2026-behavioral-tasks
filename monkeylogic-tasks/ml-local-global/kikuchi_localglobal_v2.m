@@ -164,7 +164,7 @@ all_trial_types = {trial_types_run1, trial_types_run2, ...
                    trial_types_run3, trial_types_run4};
 cond = all_trial_types{RUN}(TrialRecord.CurrentCondition);
 
-if cond == 2 || cond == 4
+if cond == 3 || cond == 4
     fifth_tone = tone_5_dev;
 else
     fifth_tone = tone_5_std;
