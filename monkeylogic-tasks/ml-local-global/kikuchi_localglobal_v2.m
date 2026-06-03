@@ -1,4 +1,4 @@
-% uhrig_local_global_task.m
+% kikuchi_local_globa_v2.m
 % MonkeyLogic 2 task — Uhrig et al. (2014) local-global auditory paradigm
 %                       with continuous pupillometry
 %
@@ -104,9 +104,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % --- Fixation enforcement ---
-REQUIRE_FIXATION = false;   % <<<< SET false TO BYPASS FIXATION REQUIREMENT >>>>
+REQUIRE_FIXATION = false;   % true:  trial aborts on fix break (standard training mode)
                             % false: trial continues on fix break; reward always given
-                            % true:  trial aborts on fix break (standard training mode)
+
+SHOW_FIXATION = true;       % true:  show fixation spot (active)
+                            % false: black screen (passive)
 
 % --- TaskObject references ---
 fixation_point = 1;
@@ -124,16 +126,23 @@ fix_acquire_t   = 2000;  % max time to acquire fixation (ms)
                          % show the fixation spot as a visual anchor
 
 % --- Tone / sequence timing (Uhrig et al., 2014) ---
-tone_dur        = 50;    % tone duration (ms)
-soa             = 150;   % stimulus onset asynchrony (ms)
-tone_gap        = soa - tone_dur;   % = 100 ms inter-tone gap
-seq_dur         = 4 * soa + tone_dur;  % = 650 ms total sequence
-isi_dur         = 850;   % ISI after sequence (ms) 850
-                         % Quirins et al. (2018) epoched to 3000 ms post-onset;
-                         % extend isi_dur to ~2350 ms to capture full pupil peak
+tone_dur        = 50;                   % tone duration (ms)
+soa             = 150;                  % stimulus onset asynchrony (ms)
+tone_gap        = soa - tone_dur;       % = 100 ms inter-tone gap
+seq_dur         = 4 * soa + tone_dur;   % = 650 ms total sequence
+isi_dur         = 850;                  % ISI after sequence (ms) 850
+                                        % Quirins et al. (2018) epoched to 
+                                        % 3000 ms post-onset;
+                                        % extend isi_dur to ~2350 ms to 
+                                        % capture full pupil peak
+isi_jitter      = 100;                  % +/- jitter on ISI (ms)
+                                        % set to 0 to replicate Uhrig
+                                        % (2014) timing
 
 % --- Reward ---
 reward_dur      = 800;   % juice reward (ms)
+reward_prob     = 0.75;  % proportion of trials rewarded (0-1)
+                         % 1 = 100% rewarded; 0 = 0% rewarded
 
 % --- Pupillometry ---
 pre_seq_baseline_dur = 300;  % ms of pre-sequence fixation used as pupil baseline
@@ -221,9 +230,12 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ── 1. Show fixation point and acquire fixation ──────────────────────
+if SHOW_FIXATION
 toggleobject(fixation_point, 'eventmarker', FixspotOn);
+end
 
 ontarget = eyejoytrack('acquirefix', fixation_point, fix_window, fix_acquire_t);
+
 if ~ontarget
     eventmarker(NoFix);
     if REQUIRE_FIXATION
@@ -370,13 +382,17 @@ end
 % Primary pupil response window. Quirins et al. (2018) used 0–3000 ms
 % from first tone onset; to capture the full pupil peak extend isi_dur
 % to ~2350 ms in PARAMETERS above (total trial = 3000 ms).
+isi_dur_jittered = isi_dur + (rand * 2 - 1) * isi_jitter;
+
 if REQUIRE_FIXATION
-    ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+    ontarget = eyejoytrack('holdfix', fixation_point, fix_window, isi_dur_jittered);
 else
-    idle(tone_dur);
+    idle(isi_dur_jittered);
     ontarget = 1;
 end
+
 eventmarker(PupilEpochOff);
+
 if ~ontarget
     eventmarker(FixBreak_pre);
     if REQUIRE_FIXATION
@@ -386,16 +402,22 @@ if ~ontarget
     end
 end
 
-
 % ── 6. Reward ────────────────────────────────────────────────────────
 % In bypass mode reward is always delivered (trialerror = 0).
 % In standard mode this line is only reached if fixation was maintained.
 trialerror(0);
-goodmonkey(reward_dur, 'NumReward', 1, 'PauseTime', 50, ...
-    'eventmarker', RewardOnset);
+
+if rand <= reward_prob
+    goodmonkey(reward_dur, 'NumReward', 1, 'PauseTime', 50, ...
+        'eventmarker', RewardOnset);
+end
 
 % ── 7. End fixation + ITI ────────────────────────────────────────────
-toggleobject(fixation_point, 'eventmarker', ITIStart);
+if SHOW_FIXATION
+    toggleobject(fixation_point, 'eventmarker', ITIStart);
+else
+    eventmarker(ITIStart);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %           OFFLINE PUPIL ANALYSIS GUIDE (comments only)
