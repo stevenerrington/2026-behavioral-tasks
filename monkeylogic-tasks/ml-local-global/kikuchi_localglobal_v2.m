@@ -104,7 +104,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % --- Fixation enforcement ---
-REQUIRE_FIXATION = true;   % <<<< SET false TO BYPASS FIXATION REQUIREMENT >>>>
+REQUIRE_FIXATION = false;   % <<<< SET false TO BYPASS FIXATION REQUIREMENT >>>>
                             % false: trial continues on fix break; reward always given
                             % true:  trial aborts on fix break (standard training mode)
 
@@ -128,7 +128,7 @@ tone_dur        = 50;    % tone duration (ms)
 soa             = 150;   % stimulus onset asynchrony (ms)
 tone_gap        = soa - tone_dur;   % = 100 ms inter-tone gap
 seq_dur         = 4 * soa + tone_dur;  % = 650 ms total sequence
-isi_dur         = 850;   % ISI after sequence (ms)
+isi_dur         = 850;   % ISI after sequence (ms) 850
                          % Quirins et al. (2018) epoched to 3000 ms post-onset;
                          % extend isi_dur to ~2350 ms to capture full pupil peak
 
@@ -138,8 +138,6 @@ reward_dur      = 800;   % juice reward (ms)
 % --- Pupillometry ---
 pre_seq_baseline_dur = 300;  % ms of pre-sequence fixation used as pupil baseline
                               % (taken from end of the 500 ms pre-sequence hold)
-pupil_sample_flag    = true; % save trial-level timestamps to TrialRecord.UserVars
-                              % Full continuous trace always saved in BHV2 regardless
 
 % --- Trial type lookup ---
 % TrialRecord.CurrentCondition is a unique integer 1-120 (row index in
@@ -265,11 +263,6 @@ if ~ontarget
     end
 end
 
-if pupil_sample_flag
-    TrialRecord.UserVars.pupil_baseline_t_end = trialtime();
-    TrialRecord.UserVars.pupil_cond           = cond;   % trial type 1-4 from Info
-    TrialRecord.UserVars.fix_required         = REQUIRE_FIXATION;
-end
 eventmarker(PupilBaselineOff);
 
 % ── 4. Play 5-tone sequence ───────────────────────────────────────────
@@ -277,7 +270,12 @@ eventmarker(PupilBaselineOff);
 % --- Tone 1 ---
 toggleobject(tone_1, 'eventmarker', AudioSeqOn);
 eventmarker(TonePos1);
-ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+if REQUIRE_FIXATION
+    ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+else
+    idle(tone_dur);
+    ontarget = 1;
+end
 toggleobject(tone_1, 'status', 'off');
 if ~ontarget
     eventmarker(FixBreak_tone1);
@@ -291,7 +289,12 @@ idle(tone_gap);
 
 % --- Tone 2 ---
 toggleobject(tone_2, 'eventmarker', TonePos2);
-ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+if REQUIRE_FIXATION
+    ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+else
+    idle(tone_dur);
+    ontarget = 1;
+end
 toggleobject(tone_2, 'status', 'off');
 if ~ontarget
     eventmarker(FixBreak_tone2);
@@ -305,7 +308,12 @@ idle(tone_gap);
 
 % --- Tone 3 ---
 toggleobject(tone_3, 'eventmarker', TonePos3);
-ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+if REQUIRE_FIXATION
+    ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+else
+    idle(tone_dur);
+    ontarget = 1;
+end
 toggleobject(tone_3, 'status', 'off');
 if ~ontarget
     eventmarker(FixBreak_tone3);
@@ -319,7 +327,12 @@ idle(tone_gap);
 
 % --- Tone 4 ---
 toggleobject(tone_4, 'eventmarker', TonePos4);
-ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+if REQUIRE_FIXATION
+    ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+else
+    idle(tone_dur);
+    ontarget = 1;
+end
 toggleobject(tone_4, 'status', 'off');
 if ~ontarget
     eventmarker(FixBreak_tone4);
@@ -337,7 +350,12 @@ if fifth_tone == tone_5_dev
 else
     toggleobject(fifth_tone, 'eventmarker', TonePos5_std);
 end
-ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+if REQUIRE_FIXATION
+    ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+else
+    idle(tone_dur);
+    ontarget = 1;
+end
 toggleobject(fifth_tone, 'status', 'off', 'eventmarker', AudioSeqOff);
 if ~ontarget
     eventmarker(FixBreak_tone5);
@@ -352,7 +370,12 @@ end
 % Primary pupil response window. Quirins et al. (2018) used 0–3000 ms
 % from first tone onset; to capture the full pupil peak extend isi_dur
 % to ~2350 ms in PARAMETERS above (total trial = 3000 ms).
-ontarget = eyejoytrack('holdfix', fixation_point, fix_window, isi_dur);
+if REQUIRE_FIXATION
+    ontarget = eyejoytrack('holdfix', fixation_point, fix_window, tone_dur);
+else
+    idle(tone_dur);
+    ontarget = 1;
+end
 eventmarker(PupilEpochOff);
 if ~ontarget
     eventmarker(FixBreak_pre);
@@ -363,9 +386,6 @@ if ~ontarget
     end
 end
 
-if pupil_sample_flag
-    TrialRecord.UserVars.pupil_epoch_t_end = trialtime();
-end
 
 % ── 6. Reward ────────────────────────────────────────────────────────
 % In bypass mode reward is always delivered (trialerror = 0).
