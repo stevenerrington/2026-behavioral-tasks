@@ -1,14 +1,40 @@
 Condition	Block	Frequency	Timing File	TaskObject#1	TaskObject#2
 1	1	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
 
-2	2	3	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+2	2	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
 3	2	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAB.wav')
 
-4	3	3	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
-5	3	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAA_A.wav')
+4	3	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAB.wav')
 
-6	4	3	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/BBBBB.wav')
-7	4	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/BBBBA.wav')
+5	4	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAB.wav')
+6	4	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
 
-8	5	3	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/BBBBB.wav')
-9	5	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/BBBB_B.wav')
+7	5	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+
+8	6	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+9	6	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAA_A.wav')
+
+10	7	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAA_A.wav')
+
+11	8	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAA_A.wav')
+12	8	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+  
+13	9	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_chain.wav')
+
+14	10	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_chain.wav')
+15	10	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_scramble.wav')
+
+16	11	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_scramble.wav')
+
+17	12	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_scramble.wav')
+18	12	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_chain.wav')
+
+19	13	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_chain.wav')
+
+20	14	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_chain.wav')
+21	14	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_scramble.wav')
+
+22	15	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_scramble.wav')
+
+23	16	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_scramble.wav')
+24	16	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_chain.wav')

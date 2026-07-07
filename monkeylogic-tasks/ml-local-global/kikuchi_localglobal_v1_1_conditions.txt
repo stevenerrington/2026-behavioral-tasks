@@ -1,0 +1,40 @@
+Condition	Block	Frequency	Timing File	TaskObject#1	TaskObject#2
+1	9	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+
+2	10	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+3	10	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAB.wav')
+
+4	11	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAB.wav')
+
+5	12	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAB.wav')
+6	12	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+
+7	13	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+
+8	14	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+9	14	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAA_A.wav')
+
+10	15	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAA_A.wav')
+
+11	16	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAA_A.wav')
+12	16	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/AAAAA.wav')
+
+13	1	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_chain.wav')
+
+14	2	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_chain.wav')
+15	2	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_scramble.wav')
+
+16	3	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_scramble.wav')
+
+17	4	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_scramble.wav')
+18	4	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/coo_chain.wav')
+
+19	5	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_chain.wav')
+
+20	6	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_chain.wav')
+21	6	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_scramble.wav')
+
+22	7	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_scramble.wav')
+
+23	8	4	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_scramble.wav')
+24	8	1	kikuchi_localglobal_v1	fix(0,0)	snd('stimuli/scream_chain.wav')

@@ -104,7 +104,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % --- Fixation enforcement ---
-REQUIRE_FIXATION = false;   % true:  trial aborts on fix break (standard training mode)
+REQUIRE_FIXATION = true;   % true:  trial aborts on fix break (standard training mode)
                             % false: trial continues on fix break; reward always given
 
 SHOW_FIXATION = true;       % true:  show fixation spot (active)
@@ -130,7 +130,7 @@ tone_dur        = 50;                   % tone duration (ms)
 soa             = 150;                  % stimulus onset asynchrony (ms)
 tone_gap        = soa - tone_dur;       % = 100 ms inter-tone gap
 seq_dur         = 4 * soa + tone_dur;   % = 650 ms total sequence
-isi_dur         = 850;                  % ISI after sequence (ms) 850
+isi_dur         = 2350;                  % ISI after sequence (ms) 850
                                         % Quirins et al. (2018) epoched to 
                                         % 3000 ms post-onset;
                                         % extend isi_dur to ~2350 ms to 

@@ -14,10 +14,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 white_square   = 1;       % TaskObject # for white square (filled rect)
 coloured_square = 2;      % TaskObject # for coloured square (filled rect)
-fix_window     = 3;       % fixation window radius (deg) — invisible circle
+fix_window     = 9;       % fixation window radius (deg) — invisible circle
 acquire_time   = 10000;   % ms to wait for initial gaze (large, near-infinite)
-hold_check_dur = 1;       % ms per gaze-check polling interval
-reward_dur     = 1000;    % ms reward pulse per polling cycle (continuous drip)
+hold_check_dur = 100;     % ms per gaze-check polling interval
+reward_dur     = 5000;    % ms reward pulse per polling cycle (continuous drip)
 reward_pause   = 0;       % ms pause between reward pulses
 max_task_dur   = 3600000; % ms total task duration before hard exit (1 hour)
 
@@ -99,8 +99,8 @@ end
 
 % 4. Task end — turn off square
 if gaze_inside
-    toggleobject(coloured_square, 'status', 'off', 'eventmarker', TaskEnd);
+    %toggleobject(coloured_square, 'status', 'off', 'eventmarker', TaskEnd);
 else
-    toggleobject(white_square, 'status', 'off', 'eventmarker', TaskEnd);
+    %toggleobject(white_square, 'status', 'off', 'eventmarker', TaskEnd);
 end
 trialerror(0); % Mark as correct so MonkeyLogic logs it cleanly

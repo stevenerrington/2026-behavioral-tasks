@@ -47,6 +47,7 @@
 %% ML1  version 1
 
 hotkey('x', 'escape_screen(); assignin(''caller'',''continue_'',false);');  % stop the task immediately
+%fixation_point = 1;
 
 
 auditory_stim = 2;
@@ -64,6 +65,7 @@ end
 
 % Turn sound ON
 toggleobject(auditory_stim, 'status', 'on', 'eventmarker', SoundOn);
+%toggleobject(fixation_point, 'eventmarker',1, [] ,sound_ms);
 
 % Wait full duration
 idle(sound_ms);

@@ -16,11 +16,12 @@ auditory_stim  = 2;       % TaskObject# for sound file
 fix_window = 7;           % fixation window radius (deg)
 fix_hold_pre  = 500;      % ms fixation before sound
 
-sound_reward_delay = 750;
+sound_reward_delay = 1500;
 sound_duration = get_object_duration(auditory_stim) + sound_reward_delay;  % duration in ms
 
 reward_duration = 800;    % ms juice reward
-iti_duration = 1000;      % ms inter-trial interval
+reward_prob     = 1.00;   % 100% of correct trials rewarded
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                         EVENT CODES
@@ -76,14 +77,20 @@ toggleobject(auditory_stim, 'status', 'off', 'eventmarker', AudioOff);
 if ~ontarget
     toggleobject(fixation_point);
     eventmarker(FixBreak3);
-    trialerror(3); % Broke fixation during sound
+    trialerror(5); % Broke fixation during sound
     return
 end
 
 % 4. Reward
-trialerror(0); % Correct
-goodmonkey(reward_duration, 'NumReward', 1, ...
-    'PauseTime', 50, 'eventmarker', RewardOnset);
+trialerror(0);
+
+% Deliver reward on 75% of correct trials
+if rand <= reward_prob
+    goodmonkey(reward_duration, ...
+        'NumReward', 1, ...
+        'PauseTime', 50, ...
+        'eventmarker', RewardOnset);
+end
 
 % 5. End fixation + ITI
 toggleobject(fixation_point, 'eventmarker', ITIStart);
