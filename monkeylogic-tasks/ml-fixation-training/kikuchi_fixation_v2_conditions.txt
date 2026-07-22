@@ -1,0 +1,13 @@
+Condition	Block	Frequency	Timing File	TaskObject#1	TaskObject#2
+1	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,0,0)	sqr(1,[1 1 1],1,0,0)
+2	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,8,0)	sqr(1,[1 0 0],1,8,0)
+3	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,-8,0)	sqr(1,[0 1 0],1,-8,0)
+4	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,0,8)	sqr(1,[0 0 1],1,0,8)
+5	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,0,-8)	sqr(1,[1 1 0],1,0,-8)
+6	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,5.7,5.7)	sqr(1,[0 1 1],1,5.7,5.7)
+7	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,-5.7,5.7)	pic(fractal_red.png,-5.7,5.7,100,100)
+8	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,5.7,-5.7)	pic(fractal_blue.png,5.7,-5.7,100,100)
+9	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,-5.7,-5.7)	pic(fractal_green.png,-5.7,-5.7,100,100)
+10	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,0,0)	pic(fractal_amber.png,0,0,100,100)
+11	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,8,0)	pic(fractal_purple.png,8,0,100,100)
+12	1	1	kikuchi_fixation_v2	sqr(1,[1 1 1],1,-8,0)	pic(fractal_teal.png,-8,0,100,100)
