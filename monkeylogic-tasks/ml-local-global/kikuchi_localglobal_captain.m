@@ -1,11 +1,10 @@
 % auditory_fixation_task.m
 % MonkeyLogic 2 task:
-%   Monkey fixates a central point for 500 ms
+%   Monkey does not need to fixate on a central point for 500 ms
 %   -> then a 5s auditory stimulus plays
-%   -> monkey must hold fixation throughout
 %
 % Outcome:
-%   Reward if fixation is maintained for full duration
+%   Reward after the full sound duration
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                         PARAMETERS
@@ -13,7 +12,7 @@
 fixation_point = 1;       % TaskObject# for fixation point
 auditory_stim  = 2;       % TaskObject# for sound file
 
-fix_window = 7;           % fixation window radius (deg)
+fix_window = 7;         % fixation window radius (deg)
 fix_hold_pre  = 500;      % ms fixation before sound
 
 sound_reward_delay = 2000;
@@ -21,7 +20,6 @@ sound_duration = get_object_duration(auditory_stim) + sound_reward_delay;  % dur
 
 reward_duration = 800;    % ms juice reward
 reward_prob     = 1.00;   % 100% of correct trials rewarded
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                         EVENT CODES
@@ -46,40 +44,45 @@ ITIEnd       = 33;
 % 1. Show fixation point
 toggleobject(fixation_point, 'eventmarker', FixspotOn);
 
-ontarget = eyejoytrack('acquirefix', fixation_point, fix_window, 2000);
+% ontarget = eyejoytrack('acquirefix', fixation_point, fix_window, 2000);
+% 
+% if ~ontarget
+%     % toggleobject(fixation_point, 'status', 'off');
+%     eventmarker(NoFix);
+%     trialerror(4); % No fixation
+%     return
+% end
 
-if ~ontarget
-    % toggleobject(fixation_point, 'status', 'off');
-    eventmarker(NoFix);
-    trialerror(4); % No fixation
-    return
-end
+idle(fix_hold_pre);
 
 eventmarker(Fixation);
 
 % 2. Hold fixation before sound
-ontarget = eyejoytrack('holdfix', fixation_point, fix_window, fix_hold_pre);
 
-if ~ontarget
-    % toggleobject(fixation_point);
-    eventmarker(FixBreak2);
-    trialerror(3); % Broke fixation
-    return
-end
+%ontarget = eyejoytrack('holdfix', fixation_point, fix_window, fix_hold_pre);
+% 
+% if ~ontarget
+%     % toggleobject(fixation_point);
+%     eventmarker(FixBreak2);
+%     trialerror(3); % Broke fixation
+%     return
+% end
 
 % 3. Play sound during fixation
 toggleobject(auditory_stim, 'eventmarker', AudioOn);
 
-ontarget = eyejoytrack('holdfix', fixation_point, fix_window, sound_duration);
+%ontarget = eyejoytrack('holdfix', fixation_point, fix_window, sound_duration);
+
+idle(sound_duration);
 
 toggleobject(auditory_stim, 'status', 'off', 'eventmarker', AudioOff);
 
-if ~ontarget
-    % toggleobject(fixation_point);
-    eventmarker(FixBreak3);
-    trialerror(5); % Broke fixation during sound
-    return
-end
+% if ~ontarget
+%     % toggleobject(fixation_point);
+%     eventmarker(FixBreak3);
+%     trialerror(5); % Broke fixation during sound
+%     return
+% end
 
 % 4. Reward
 trialerror(0);
