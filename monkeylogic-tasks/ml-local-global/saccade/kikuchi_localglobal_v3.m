@@ -21,19 +21,20 @@ target         = 3;
 % PARAMETERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-fix_window      = 5;      % deg
+fix_window      = 3;      % deg
 
-fix_hold_pre    = 500;    % before target
+fix_hold_pre    = randi([500 1500]);    % before target
 target_delay    = 500;    % target before sound
 
 response_window = 1500;    % ms allowed to initiate saccade
 target_hold     = 200;    % hold target fixation
 
-reward_duration = 800;
+reward_duration = 1200;
 reward_prob     = 1.00;
 
 sound_duration  = get_object_duration(auditory_stim);
 oddball_time    = sound_duration - 50;
+timeout_dur = 1500;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % EVENT CODES
@@ -111,6 +112,8 @@ if ~ontarget
     toggleobject([fixation_point target],'status','off');
     eventmarker(FixBreak2);
     trialerror(3);
+    idle(timeout_dur)
+
     return
 end
 
@@ -128,7 +131,7 @@ toggleobject(auditory_stim,'eventmarker',AudioOn);
 if ~is_oddball
 
     ontarget = eyejoytrack('holdfix', ...
-        fixation_point, fix_window, sound_duration);
+        fixation_point, fix_window, sound_duration + 750);
 
     toggleobject(auditory_stim,'status','off','eventmarker',AudioOff);
 
@@ -136,10 +139,11 @@ if ~is_oddball
         toggleobject([fixation_point target],'status','off');
         eventmarker(FixBreak3);
         trialerror(5);
+
+        idle(timeout_dur)
         return
     end
 
-    idle(500)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ODDBALL TRIAL
@@ -156,15 +160,14 @@ else
         toggleobject([fixation_point target],'status','off');
         eventmarker(FixBreak3);
         trialerror(5);
+        idle(timeout_dur)
+
         return
     end
 
     % Allow saccade to target
-    acquired = eyejoytrack('acquirefix', ...
+    [acquired, rt] = eyejoytrack('acquirefix', ...
         target, fix_window, response_window);
-    acq_time = trialtime;
-
-    rt = acq_time - oddball_trial_time;
     
     if ~acquired
         toggleobject(auditory_stim,'status','off','eventmarker',AudioOff);
@@ -190,6 +193,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CORRECT TRIAL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+toggleobject(target,'status','off');
 
 trialerror(0);
 
@@ -204,7 +208,7 @@ end
 % CLEAN UP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-toggleobject([fixation_point target],'status','off','eventmarker',ITIStart);
+toggleobject([fixation_point],'status','off','eventmarker',ITIStart);
 
 idle(500);
 

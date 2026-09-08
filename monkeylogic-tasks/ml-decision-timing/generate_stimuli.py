@@ -19,7 +19,6 @@ Date:   2026
 
 import numpy as np
 import os
-import csv
 import soundfile as sf   # pip install soundfile
 from itertools import product as iproduct
 
@@ -44,19 +43,15 @@ ISI_MIN_ABS            = 0.08   # s
 
 BEEP_DURATION          = 0.05   # s
 BEEP_FREQ              = 880    # Hz
-CATCH_FREQ             = 1320   # Hz
 BEEP_VOL               = 0.70
-CATCH_VOL              = 0.80
 
-CATCH_PROB             = 0.05
 TRIALS_PER_BLOCK       = 60
-N_PRACTICE             = 5
 
 RAMP_DURATION          = 0.005  # s — onset/offset cosine ramp to avoid clicks
 
 # Output paths
 WAV_DIR        = 'wavs'
-CONDITIONS_CSV = 'temporal_task_conditions.csv'
+CONDITIONS_CSV = 'kikuchi_decisiontiming_v1_conditions.txt'   # real ML2 format is tab-delimited .txt, not .csv
 
 os.makedirs(WAV_DIR, exist_ok=True)
 
@@ -135,15 +130,6 @@ def build_sequence(block_config, predictability, rng):
 
 
 # ============================================================
-# GENERATE CATCH TONE (single shared WAV)
-# ============================================================
-
-catch_tone = make_tone(CATCH_FREQ, BEEP_DURATION, CATCH_VOL)
-catch_path = os.path.join(WAV_DIR, 'catch_tone.wav')
-sf.write(catch_path, catch_tone, FS)
-print(f"  Written: {catch_path}")
-
-# ============================================================
 # GENERATE TRIAL LIST
 # ============================================================
 
@@ -154,18 +140,14 @@ def generate_block_trials(block_config, block_num, block_name,
     """
     Returns list of trial dicts for one block.
     Predictability levels are balanced (equal n per level), randomly ordered.
-    Catch trials assigned randomly at CATCH_PROB.
     """
     trials_per_level = trials_per_block // len(ISI_PREDICTABILITY_LEVELS)
     pred_list = (ISI_PREDICTABILITY_LEVELS * trials_per_level)[:]
     rng.shuffle(pred_list)
 
-    catch_flags = rng.random(trials_per_block) < CATCH_PROB
-
     trials = []
     for t_idx in range(trials_per_block):
         pred   = float(pred_list[t_idx])
-        is_cat = int(catch_flags[t_idx])
 
         onsets, actual_dur, n_beeps, isis = build_sequence(
             block_config, pred, rng
@@ -176,7 +158,6 @@ def generate_block_trials(block_config, block_num, block_name,
             'block_num'    : block_num,
             'mean_dur'     : block_config['mean_dur'],
             'predictability': pred,
-            'is_catch'     : is_cat,
             'actual_seq_dur': round(actual_dur, 4),
             'n_beeps'      : n_beeps,
             'isis_mean'    : round(float(np.mean(isis)) if len(isis) > 0 else np.nan, 4),
@@ -188,17 +169,10 @@ def generate_block_trials(block_config, block_num, block_name,
     return trials
 
 
-# Practice block
-practice_config = {'name': 'practice', 'mean_dur': 4.0,
-                   'base_isi': 0.32, 'n_lambda': 9}
-practice_trials = generate_block_trials(
-    practice_config, block_num=0, block_name='practice',
-    trials_per_block=N_PRACTICE, practice=True
-)
-
-# Main blocks (fixed order here; ML2 block randomisation is handled
-# by shuffling block groups in the conditions file or via ML2 block control)
-all_trials = list(practice_trials)
+# Main blocks only — practice has been dropped from this task (fixed order
+# here; ML2 block randomisation is handled by shuffling block groups in the
+# conditions file or via ML2 block control)
+all_trials = []
 for b_idx, cfg in enumerate(BLOCK_CONFIGS):
     block_trials = generate_block_trials(
         cfg, block_num=b_idx + 1, block_name=cfg['name'],
@@ -209,101 +183,87 @@ for b_idx, cfg in enumerate(BLOCK_CONFIGS):
 # ============================================================
 # WRITE WAV FILES AND BUILD CONDITIONS CSV
 # ============================================================
-# ML2 conditions file columns (non-ML2-reserved columns become trial variables):
+# ML2 conditions file — valid headers ONLY are:
+#   "Condition", "Frequency", "Block", "Timing File", "Info",
+#   and "TaskObject#1" through "TaskObject#N".
+# Arbitrary named columns (e.g. "BLOCK_NAME") are NOT valid and will
+# cause a load error. All per-trial variables instead go through the
+# single reserved "Info" column, as a flat comma-separated list of
+# 'key',value pairs — ML2 parses this into a struct that the timing
+# script reads as Info.key (e.g. Info.block_name, Info.actual_seq_dur).
 #
-#   Condition     — integer condition number (required by ML2)
-#   Block         — ML2 block number (controls block structure in GUI)
-#   TaskObject1   — white fixation spot  (defined once; same every trial)
-#   TaskObject2   — green fixation spot  (defined once; same every trial)
-#   TaskObject3   — beep train WAV       (trial-unique path)
-#   TaskObject4   — catch tone WAV       (same path every trial)
-#   TaskObject5   — catch flash bitmap   (same path every trial)
-#   BLOCK_NAME    — passed to timing script
-#   MEAN_DUR      — passed to timing script
-#   PREDICTABILITY — passed to timing script
-#   IS_CATCH      — passed to timing script
-#   BEEP_WAV_INDEX — for bookkeeping
-#   ACTUAL_SEQ_DUR — passed to timing script (controls scene duration)
-#   N_BEEPS        — passed to timing script
-#   ISIS_MEAN      — passed to timing script
-#   ISIS_STD       — passed to timing script
-#   PRACTICE       — passed to timing script
+# TaskObject syntax (must be tab-delimited, quoted as shown):
+#   "fix(x_dva,y_dva)"                      — fixation-type spot at a position
+#   "sqr(radius_dva,[R G B 0-1],alpha,x,y)" — coloured square at a position
+#   snd('relative/path.wav')                — sound, no volume argument
 #
-# TaskObject syntax for ML2 CSV (sound):
-#   snd(path, vol)         where vol is 0–1 (ML2 maps to dB internally)
-# TaskObject syntax for fixation spot:
-#   fix(radius_dva)        or a bitmap path
-# TaskObject syntax for bitmap:
-#   bmp(path)
+# TaskObject#2 IS the saccade target (green square, 7 dva up) — there is
+# no separate cue object in this design.
 
-# Paths — adjust to match your ML2 task folder structure
-FIX_WHITE_DEF  = "fix(0.3)"          # 0.3 dva radius white square (ML2 default fix)
-FIX_GREEN_DEF  = "fix(0.3,[0 255 0])"  # green fix spot — RGB colour arg
-CATCH_WAV_REL  = "wavs/catch_tone.wav"
-CATCH_FLASH_DEF = "bmp(catch_flash.bmp)"  # place a yellow triangle BMP in task folder
+FIX_WHITE_DEF  = '"fix(0,0)"'
+TARGET_DEF     = '"sqr(0.5,[0.61 0.61 0.61],1,0,7)"'   # 0.5 dva radius, gray, 7 dva up
 
-csv_fieldnames = [
-    'Condition', 'Block',
-    'TaskObject1', 'TaskObject2', 'TaskObject3', 'TaskObject4', 'TaskObject5',
-    'BLOCK_NAME', 'MEAN_DUR', 'PREDICTABILITY', 'IS_CATCH',
-    'BEEP_WAV_INDEX', 'ACTUAL_SEQ_DUR', 'N_BEEPS', 'ISIS_MEAN', 'ISIS_STD',
-    'PRACTICE',
-]
+conditions_fieldnames = ['Condition', 'Block', 'Frequency', 'Timing File', 'Info',
+                          'TaskObject#1', 'TaskObject#2', 'TaskObject#3']
+
+def build_info(trial, wav_index):
+    """Flat 'key',value list for the Info column -> Info.key in the timing script."""
+    return (f"'block_name','{trial['block_name']}',"
+            f"'mean_dur',{trial['mean_dur']},"
+            f"'predictability',{trial['predictability']},"
+            f"'actual_seq_dur',{trial['actual_seq_dur']},"
+            f"'n_beeps',{trial['n_beeps']},"
+            f"'isis_mean',{trial['isis_mean']},"
+            f"'isis_std',{trial['isis_std']},"
+            f"'practice',{trial['practice']},"
+            f"'beep_wav_index',{wav_index}")
 
 rows = []
 for trial_idx, trial in enumerate(all_trials):
     wav_index  = trial_idx + 1
     wav_fname  = f"beep_train_{wav_index:04d}.wav"
     wav_fpath  = os.path.join(WAV_DIR, wav_fname)
-    wav_relpath = f"wavs/{wav_fname}"  # relative to ML2 task folder
+    wav_relpath = f"./wavs/{wav_fname}"  # relative to ML2 task folder
 
     # Write WAV
     buf = build_beep_train_wav(trial['_onsets'], trial['n_beeps'])
     sf.write(wav_fpath, buf, FS)
 
-    # ML2 block assignment:
-    #   block 0  = practice (shown first, not randomised)
-    #   blocks 1-3 = main blocks
+    # ML2 block assignment (Block must be a natural number, 1 or larger):
+    #   block 1    = practice (shown first, not randomised)
+    #   blocks 2-4 = main blocks
     # To randomise main block order: set ML2 GUI → Block Order → Random
     ml2_block = trial['block_num']
 
-    row = {
-        'Condition'    : wav_index,
-        'Block'        : ml2_block,
-        'TaskObject1'  : FIX_WHITE_DEF,
-        'TaskObject2'  : FIX_GREEN_DEF,
-        'TaskObject3'  : f"snd({wav_relpath},{BEEP_VOL:.2f})",
-        'TaskObject4'  : f"snd({CATCH_WAV_REL},{CATCH_VOL:.2f})",
-        'TaskObject5'  : CATCH_FLASH_DEF,
-        'BLOCK_NAME'   : trial['block_name'],
-        'MEAN_DUR'     : trial['mean_dur'],
-        'PREDICTABILITY': trial['predictability'],
-        'IS_CATCH'     : trial['is_catch'],
-        'BEEP_WAV_INDEX': wav_index,
-        'ACTUAL_SEQ_DUR': trial['actual_seq_dur'],
-        'N_BEEPS'      : trial['n_beeps'],
-        'ISIS_MEAN'    : trial['isis_mean'],
-        'ISIS_STD'     : trial['isis_std'],
-        'PRACTICE'     : trial['practice'],
-    }
+    row = [
+        wav_index,
+        ml2_block,
+        1,
+        'kikuchi_decisiontiming_v1.m',
+        build_info(trial, wav_index),
+        FIX_WHITE_DEF,
+        TARGET_DEF,
+        f"snd('{wav_relpath}')",
+    ]
     rows.append(row)
 
+# Written by hand (not csv.writer) to avoid auto-quoting the embedded
+# double quotes in the TaskObject fields — ML2 expects them literal.
 with open(CONDITIONS_CSV, 'w', newline='') as f:
-    writer = csv.DictWriter(f, fieldnames=csv_fieldnames)
-    writer.writeheader()
-    writer.writerows(rows)
+    f.write('\t'.join(conditions_fieldnames) + '\n')
+    for row in rows:
+        f.write('\t'.join(str(x) for x in row) + '\n')
 
 print(f"\nDone.")
 print(f"  {len(all_trials)} WAV files written to '{WAV_DIR}/'")
 print(f"  Conditions file written: '{CONDITIONS_CSV}'")
 print(f"\n  Trial breakdown:")
-print(f"    Practice : {N_PRACTICE}")
 for cfg in BLOCK_CONFIGS:
     print(f"    {cfg['name'].capitalize():<8} : {TRIALS_PER_BLOCK}")
 print(f"    TOTAL    : {len(all_trials)}")
 print(f"\n  Next steps:")
-print(f"    1. Copy '{WAV_DIR}/', 'temporal_task.m', and 'catch_flash.bmp'")
+print(f"    1. Copy '{WAV_DIR}/' and 'kikuchi_decisiontiming_v1.m'")
 print(f"       into your ML2 task folder.")
 print(f"    2. In ML2 GUI → Conditions → load '{CONDITIONS_CSV}'.")
-print(f"    3. Set Block Order to 'Random' for main blocks if desired.")
-print(f"    4. Run temporal_task.m as the timing file.")
+print(f"    3. Set Block Order to 'Random' if desired.")
+print(f"    4. Run kikuchi_decisiontiming_v1.m as the timing file.")
