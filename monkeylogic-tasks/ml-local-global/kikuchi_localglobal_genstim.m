@@ -55,7 +55,7 @@ for s = 1:size(seqs,1)
     end
 
     audiowrite(fullfile('C:\Experiments\MonkeyLogic\monkeylogic-tasks\ml-local-global\stimuli',[filename '.wav']), y, fs);
-
+ 
 end
 
 %% Generate AAAA_A (double SOA before final tone)
